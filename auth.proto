@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package proto;
+
+// auth service def
+service AuthService{
+	rpc Login(User.LoginInfo) returns (User.LoginResp){} //验证帐号
+}
+
+message User{
+	message Nil{}
+	message LoginInfo{
+		string	uuid		= 1;
+		int32	auth_type	= 2;
+		string	username	= 3;
+		string	passwd		= 4;
+		int32   gsid		= 5;
+	}
+	message LoginResp{
+		int32	uid			= 1;
+		uint64  unique_id	= 2;
+		string  cert		= 3;
+	}
+	
+}
