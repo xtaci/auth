@@ -4,9 +4,10 @@ import (
 	"db/auth_tbl"
 	"errors"
 	"os"
-	"services"
-	"services/proto"
 	"strings"
+
+	"github.com/gonet2/libs/services"
+	"github.com/gonet2/libs/services/proto"
 
 	"golang.org/x/net/context"
 )
