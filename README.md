@@ -1,4 +1,4 @@
-# Auth(鉴权) 
+# auth(鉴权) 
 [![Build Status](https://travis-ci.org/gonet2/auth.svg?branch=master)](https://travis-ci.org/gonet2/auth)
 
 ## 设计理念
