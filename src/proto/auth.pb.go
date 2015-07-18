@@ -9,7 +9,7 @@ It is generated from these files:
 	auth.proto
 
 It has these top-level messages:
-	User
+	Auth
 */
 package proto
 
@@ -27,49 +27,64 @@ var _ grpc.ClientConn
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto1.Marshal
 
-type User struct {
+type Auth_CertificateType int32
+
+const (
+	Auth_UUID     Auth_CertificateType = 0
+	Auth_PLAIN    Auth_CertificateType = 1
+	Auth_TOKEN    Auth_CertificateType = 2
+	Auth_FACEBOOK Auth_CertificateType = 3
+)
+
+var Auth_CertificateType_name = map[int32]string{
+	0: "UUID",
+	1: "PLAIN",
+	2: "TOKEN",
+	3: "FACEBOOK",
+}
+var Auth_CertificateType_value = map[string]int32{
+	"UUID":     0,
+	"PLAIN":    1,
+	"TOKEN":    2,
+	"FACEBOOK": 3,
 }
 
-func (m *User) Reset()         { *m = User{} }
-func (m *User) String() string { return proto1.CompactTextString(m) }
-func (*User) ProtoMessage()    {}
-
-type User_Nil struct {
+func (x Auth_CertificateType) String() string {
+	return proto1.EnumName(Auth_CertificateType_name, int32(x))
 }
 
-func (m *User_Nil) Reset()         { *m = User_Nil{} }
-func (m *User_Nil) String() string { return proto1.CompactTextString(m) }
-func (*User_Nil) ProtoMessage()    {}
-
-type User_LoginInfo struct {
-	Uuid     string `protobuf:"bytes,1,opt,name=uuid" json:"uuid,omitempty"`
-	AuthType int32  `protobuf:"varint,2,opt,name=auth_type" json:"auth_type,omitempty"`
-	Username string `protobuf:"bytes,3,opt,name=username" json:"username,omitempty"`
-	Passwd   string `protobuf:"bytes,4,opt,name=passwd" json:"passwd,omitempty"`
-	Gsid     int32  `protobuf:"varint,5,opt,name=gsid" json:"gsid,omitempty"`
+type Auth struct {
 }
 
-func (m *User_LoginInfo) Reset()         { *m = User_LoginInfo{} }
-func (m *User_LoginInfo) String() string { return proto1.CompactTextString(m) }
-func (*User_LoginInfo) ProtoMessage()    {}
+func (m *Auth) Reset()         { *m = Auth{} }
+func (m *Auth) String() string { return proto1.CompactTextString(m) }
+func (*Auth) ProtoMessage()    {}
 
-type User_LoginResp struct {
-	Uid      int32  `protobuf:"varint,1,opt,name=uid" json:"uid,omitempty"`
-	UniqueId uint64 `protobuf:"varint,2,opt,name=unique_id" json:"unique_id,omitempty"`
-	Cert     string `protobuf:"bytes,3,opt,name=cert" json:"cert,omitempty"`
+type Auth_Certificate struct {
+	Type  Auth_CertificateType `protobuf:"varint,1,opt,enum=proto.Auth_CertificateType" json:"Type,omitempty"`
+	Proof []byte               `protobuf:"bytes,2,opt,proto3" json:"Proof,omitempty"`
 }
 
-func (m *User_LoginResp) Reset()         { *m = User_LoginResp{} }
-func (m *User_LoginResp) String() string { return proto1.CompactTextString(m) }
-func (*User_LoginResp) ProtoMessage()    {}
+func (m *Auth_Certificate) Reset()         { *m = Auth_Certificate{} }
+func (m *Auth_Certificate) String() string { return proto1.CompactTextString(m) }
+func (*Auth_Certificate) ProtoMessage()    {}
+
+type Auth_Authorization struct {
+	OK bool `protobuf:"varint,1,opt" json:"OK,omitempty"`
+}
+
+func (m *Auth_Authorization) Reset()         { *m = Auth_Authorization{} }
+func (m *Auth_Authorization) String() string { return proto1.CompactTextString(m) }
+func (*Auth_Authorization) ProtoMessage()    {}
 
 func init() {
+	proto1.RegisterEnum("proto.Auth_CertificateType", Auth_CertificateType_name, Auth_CertificateType_value)
 }
 
 // Client API for AuthService service
 
 type AuthServiceClient interface {
-	Login(ctx context.Context, in *User_LoginInfo, opts ...grpc.CallOption) (*User_LoginResp, error)
+	Auth(ctx context.Context, in *Auth_Certificate, opts ...grpc.CallOption) (*Auth_Authorization, error)
 }
 
 type authServiceClient struct {
@@ -80,9 +95,9 @@ func NewAuthServiceClient(cc *grpc.ClientConn) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) Login(ctx context.Context, in *User_LoginInfo, opts ...grpc.CallOption) (*User_LoginResp, error) {
-	out := new(User_LoginResp)
-	err := grpc.Invoke(ctx, "/proto.AuthService/Login", in, out, c.cc, opts...)
+func (c *authServiceClient) Auth(ctx context.Context, in *Auth_Certificate, opts ...grpc.CallOption) (*Auth_Authorization, error) {
+	out := new(Auth_Authorization)
+	err := grpc.Invoke(ctx, "/proto.AuthService/Auth", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,19 +107,19 @@ func (c *authServiceClient) Login(ctx context.Context, in *User_LoginInfo, opts 
 // Server API for AuthService service
 
 type AuthServiceServer interface {
-	Login(context.Context, *User_LoginInfo) (*User_LoginResp, error)
+	Auth(context.Context, *Auth_Certificate) (*Auth_Authorization, error)
 }
 
 func RegisterAuthServiceServer(s *grpc.Server, srv AuthServiceServer) {
 	s.RegisterService(&_AuthService_serviceDesc, srv)
 }
 
-func _AuthService_Login_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
-	in := new(User_LoginInfo)
+func _AuthService_Auth_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+	in := new(Auth_Certificate)
 	if err := codec.Unmarshal(buf, in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(AuthServiceServer).Login(ctx, in)
+	out, err := srv.(AuthServiceServer).Auth(ctx, in)
 	if err != nil {
 		return nil, err
 	}
@@ -116,8 +131,8 @@ var _AuthService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Login",
-			Handler:    _AuthService_Login_Handler,
+			MethodName: "Auth",
+			Handler:    _AuthService_Auth_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{},

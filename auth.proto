@@ -2,24 +2,25 @@ syntax = "proto3";
 
 package proto;
 
-// auth service def
-service AuthService{
-	rpc Login(User.LoginInfo) returns (User.LoginResp){} //验证帐号
+// 认证服务
+service AuthService {
+	rpc Auth(Auth.Certificate) returns (Auth.Authorization){} // 验证凭证
 }
 
-message User{
-	message Nil{}
-	message LoginInfo{
-		string	uuid		= 1;
-		int32	auth_type	= 2;
-		string	username	= 3;
-		string	passwd		= 4;
-		int32   gsid		= 5;
+message Auth{
+	enum CertificateType {
+		UUID = 0;
+		PLAIN = 1;	
+		TOKEN = 2;
+		FACEBOOK = 3;
 	}
-	message LoginResp{
-		int32	uid			= 1;
-		uint64  unique_id	= 2;
-		string  cert		= 3;
+
+	message Certificate{
+		CertificateType Type = 1;
+		bytes Proof=2;
 	}
-	
+
+	message Authorization{
+		bool OK=1;
+	}
 }

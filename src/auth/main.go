@@ -13,10 +13,6 @@ import (
 	pb "proto"
 )
 
-const (
-	_port = ":50006"
-)
-
 func main() {
 	log.SetPrefix(SERVICE)
 	// 监听
