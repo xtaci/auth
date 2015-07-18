@@ -6,14 +6,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gonet2/libs/services"
-	"github.com/gonet2/libs/services/proto"
+	sp "github.com/gonet2/libs/services"
+	spp "github.com/gonet2/libs/services/proto"
 
 	"golang.org/x/net/context"
 )
 
 import (
-	pb "proto"
+	. "proto"
 	. "types"
 
 	log "github.com/gonet2/libs/nsq-logger"
@@ -35,21 +35,28 @@ const (
 )
 
 type server struct {
-	snowflake proto.SnowflakeServiceClient
+	snowflake spp.SnowflakeServiceClient
 }
 
 func (s *server) init() {
-	c, err := services.GetService(services.SERVICE_SNOWFLAKE)
+	c, err := sp.GetService(sp.SERVICE_SNOWFLAKE)
 	if err != nil {
-		log.Critical("Snowflake err", err)
+		log.Critical(err)
 		os.Exit(-1)
 	}
-	s.snowflake, _ = c.(proto.SnowflakeServiceClient)
 
+	// TODO: retry all snowflakes
+	snowflake, ok := c.(spp.SnowflakeServiceClient)
+	if !ok {
+		log.Critical("cannot connect to snowflake service.")
+		os.Exit(-1)
+	}
+
+	s.snowflake = snowflake
 }
 
-//------------------------------------------------------- user login
-func (s *server) Login(ctx context.Context, in *pb.User_LoginInfo) (*pb.User_LoginResp, error) {
+// user login
+func (s *server) Login(ctx context.Context, in *User_LoginInfo) (*User_LoginResp, error) {
 	uuid := strings.ToUpper(in.Uuid)
 	auth_type := uint8(in.AuthType)
 	if uuid == "" {
@@ -70,11 +77,11 @@ func (s *server) Login(ctx context.Context, in *pb.User_LoginInfo) (*pb.User_Log
 		return nil, errors.New("not support yet")
 	}
 
-	return &pb.User_LoginResp{Uid: auth.Id, UniqueId: auth.UniqueId, Cert: auth.Cert}, nil
+	return &User_LoginResp{Uid: auth.Id, UniqueId: auth.UniqueId, Cert: auth.Cert}, nil
 }
 
 func (s *server) next_uid() int32 {
-	uid, err := s.snowflake.Next(context.Background(), &proto.Snowflake_Key{Name: SEQS_UID})
+	uid, err := s.snowflake.Next(context.Background(), &spp.Snowflake_Key{Name: SEQS_UID})
 	if err != nil {
 		log.Critical(err)
 		return 0
@@ -82,7 +89,7 @@ func (s *server) next_uid() int32 {
 	return int32(uid.Value)
 }
 func (s *server) next_unique() uint64 {
-	uid, err := s.snowflake.Next(context.Background(), &proto.Snowflake_Key{Name: SEQS_UID})
+	uid, err := s.snowflake.Next(context.Background(), &spp.Snowflake_Key{Name: SEQS_UID})
 	if err != nil {
 		log.Critical(err)
 		return 0
