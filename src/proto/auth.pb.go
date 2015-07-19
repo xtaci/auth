@@ -69,13 +69,14 @@ func (m *Auth_Certificate) Reset()         { *m = Auth_Certificate{} }
 func (m *Auth_Certificate) String() string { return proto1.CompactTextString(m) }
 func (*Auth_Certificate) ProtoMessage()    {}
 
-type Auth_Authorization struct {
-	OK bool `protobuf:"varint,1,opt" json:"OK,omitempty"`
+type Auth_Result struct {
+	OK   bool   `protobuf:"varint,1,opt" json:"OK,omitempty"`
+	Body []byte `protobuf:"bytes,2,opt,proto3" json:"Body,omitempty"`
 }
 
-func (m *Auth_Authorization) Reset()         { *m = Auth_Authorization{} }
-func (m *Auth_Authorization) String() string { return proto1.CompactTextString(m) }
-func (*Auth_Authorization) ProtoMessage()    {}
+func (m *Auth_Result) Reset()         { *m = Auth_Result{} }
+func (m *Auth_Result) String() string { return proto1.CompactTextString(m) }
+func (*Auth_Result) ProtoMessage()    {}
 
 func init() {
 	proto1.RegisterEnum("proto.Auth_CertificateType", Auth_CertificateType_name, Auth_CertificateType_value)
@@ -84,7 +85,7 @@ func init() {
 // Client API for AuthService service
 
 type AuthServiceClient interface {
-	Auth(ctx context.Context, in *Auth_Certificate, opts ...grpc.CallOption) (*Auth_Authorization, error)
+	Auth(ctx context.Context, in *Auth_Certificate, opts ...grpc.CallOption) (*Auth_Result, error)
 }
 
 type authServiceClient struct {
@@ -95,8 +96,8 @@ func NewAuthServiceClient(cc *grpc.ClientConn) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) Auth(ctx context.Context, in *Auth_Certificate, opts ...grpc.CallOption) (*Auth_Authorization, error) {
-	out := new(Auth_Authorization)
+func (c *authServiceClient) Auth(ctx context.Context, in *Auth_Certificate, opts ...grpc.CallOption) (*Auth_Result, error) {
+	out := new(Auth_Result)
 	err := grpc.Invoke(ctx, "/proto.AuthService/Auth", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -107,7 +108,7 @@ func (c *authServiceClient) Auth(ctx context.Context, in *Auth_Certificate, opts
 // Server API for AuthService service
 
 type AuthServiceServer interface {
-	Auth(context.Context, *Auth_Certificate) (*Auth_Authorization, error)
+	Auth(context.Context, *Auth_Certificate) (*Auth_Result, error)
 }
 
 func RegisterAuthServiceServer(s *grpc.Server, srv AuthServiceServer) {
