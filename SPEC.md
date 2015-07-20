@@ -1,9 +1,7 @@
 # 凭证规范
 ## uuid
 <pre>
-{
-	"uuid":"1KSDFJ13K14"
-}
+二进制uuid, eg: CA761232-ED42-11CE-BACD-00AA0057B223 
 </pre>
 ## plain
 <pre>
