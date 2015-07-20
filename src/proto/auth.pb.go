@@ -70,8 +70,9 @@ func (m *Auth_Certificate) String() string { return proto1.CompactTextString(m) 
 func (*Auth_Certificate) ProtoMessage()    {}
 
 type Auth_Result struct {
-	OK   bool   `protobuf:"varint,1,opt" json:"OK,omitempty"`
-	Body []byte `protobuf:"bytes,2,opt,proto3" json:"Body,omitempty"`
+	OK     bool   `protobuf:"varint,1,opt" json:"OK,omitempty"`
+	UserId int32  `protobuf:"varint,2,opt" json:"UserId,omitempty"`
+	Body   []byte `protobuf:"bytes,3,opt,proto3" json:"Body,omitempty"`
 }
 
 func (m *Auth_Result) Reset()         { *m = Auth_Result{} }

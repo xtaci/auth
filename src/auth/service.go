@@ -36,9 +36,9 @@ func (s *server) Auth(ctx context.Context, cert *Auth_Certificate) (*Auth_Result
 	switch cert.Type {
 	case Auth_UUID:
 		if uuid_regexp.MatchString(strings.ToLower(string(cert.Proof))) {
-			return &Auth_Result{true, nil}, nil
+			return &Auth_Result{true, -1, nil}, nil
 		} else {
-			return &Auth_Result{false, nil}, nil
+			return &Auth_Result{false, -1, nil}, nil
 		}
 	case Auth_PLAIN:
 	case Auth_TOKEN:
