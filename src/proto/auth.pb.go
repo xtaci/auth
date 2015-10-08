@@ -14,6 +14,8 @@ It has these top-level messages:
 package proto
 
 import proto1 "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 import (
 	context "golang.org/x/net/context"
@@ -21,11 +23,9 @@ import (
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto1.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 type Auth_CertificateType int32
 
@@ -61,8 +61,8 @@ func (m *Auth) String() string { return proto1.CompactTextString(m) }
 func (*Auth) ProtoMessage()    {}
 
 type Auth_Certificate struct {
-	Type  Auth_CertificateType `protobuf:"varint,1,opt,enum=proto.Auth_CertificateType" json:"Type,omitempty"`
-	Proof []byte               `protobuf:"bytes,2,opt,proto3" json:"Proof,omitempty"`
+	Type  Auth_CertificateType `protobuf:"varint,1,opt,name=Type,enum=proto.Auth_CertificateType" json:"Type,omitempty"`
+	Proof []byte               `protobuf:"bytes,2,opt,name=Proof,proto3" json:"Proof,omitempty"`
 }
 
 func (m *Auth_Certificate) Reset()         { *m = Auth_Certificate{} }
@@ -70,9 +70,9 @@ func (m *Auth_Certificate) String() string { return proto1.CompactTextString(m) 
 func (*Auth_Certificate) ProtoMessage()    {}
 
 type Auth_Result struct {
-	OK     bool   `protobuf:"varint,1,opt" json:"OK,omitempty"`
-	UserId int32  `protobuf:"varint,2,opt" json:"UserId,omitempty"`
-	Body   []byte `protobuf:"bytes,3,opt,proto3" json:"Body,omitempty"`
+	OK     bool   `protobuf:"varint,1,opt,name=OK" json:"OK,omitempty"`
+	UserId int32  `protobuf:"varint,2,opt,name=UserId" json:"UserId,omitempty"`
+	Body   []byte `protobuf:"bytes,3,opt,name=Body,proto3" json:"Body,omitempty"`
 }
 
 func (m *Auth_Result) Reset()         { *m = Auth_Result{} }
@@ -82,6 +82,10 @@ func (*Auth_Result) ProtoMessage()    {}
 func init() {
 	proto1.RegisterEnum("proto.Auth_CertificateType", Auth_CertificateType_name, Auth_CertificateType_value)
 }
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
 
 // Client API for AuthService service
 
@@ -116,9 +120,9 @@ func RegisterAuthServiceServer(s *grpc.Server, srv AuthServiceServer) {
 	s.RegisterService(&_AuthService_serviceDesc, srv)
 }
 
-func _AuthService_Auth_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _AuthService_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(Auth_Certificate)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(AuthServiceServer).Auth(ctx, in)
