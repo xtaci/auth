@@ -2,13 +2,14 @@ package main
 
 import (
 	"errors"
-	"golang.org/x/net/context"
 	"regexp"
 	"strings"
+
+	"golang.org/x/net/context"
 )
 
 import (
-	. "proto"
+	. "auth/proto"
 )
 
 const (

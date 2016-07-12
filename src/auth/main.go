@@ -10,7 +10,7 @@ import (
 )
 
 import (
-	pb "proto"
+	pb "auth/proto"
 )
 
 func main() {
