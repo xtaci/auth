@@ -2,8 +2,6 @@ language: go
 go:
     - tip
 install:
-    - export GOPATH=$GOPATH/src/github.com/gonet2/auth
-    - cd $GOPATH
     - go install auth
 before_script:
 script:
