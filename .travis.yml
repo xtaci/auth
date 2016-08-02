@@ -1,8 +1,11 @@
-language: go
-go:
-    - tip
-install:
-    - go install github.com/gonet2/auth
+sudo: required
+
+services:
+    - docker
+
+before_install:
+    - docker build -t xtaci/auth .
+
 before_script:
 script:
     - exit 0
