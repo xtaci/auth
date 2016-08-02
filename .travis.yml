@@ -2,7 +2,7 @@ language: go
 go:
     - tip
 install:
-    - go install auth
+    - go install github.com/gonet2/auth
 before_script:
 script:
     - exit 0
